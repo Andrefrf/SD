@@ -11,7 +11,6 @@ public class RESTServer {
 	public static void main(String[] args) {
 		
 		
-
 		String URI_BASE = "http://0.0.0.0:9999/v1/";
 
 		ResourceConfig config = new ResourceConfig();
@@ -20,5 +19,6 @@ public class RESTServer {
 		JdkHttpServerFactory.createHttpServer( URI.create(URI_BASE), config);
 
 		System.err.println("Server ready....");
+		
 	}
 }
