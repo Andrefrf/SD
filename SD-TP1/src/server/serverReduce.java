@@ -9,7 +9,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpHandlerContainer;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import implementation.Implementor;
+import implementation.ImplementorData;
 
 public class serverReduce {
 	
@@ -18,7 +18,7 @@ public class serverReduce {
 		String URI_BASE = "http://0.0.0.0:9999/v1/";
 		
 		ResourceConfig config = new ResourceConfig();
-		config.register(new Implementor());
+		config.register(new ImplementorData());
 		
 		JdkHttpServerFactory.createHttpServer( URI.create(URI_BASE), config);
 		

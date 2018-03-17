@@ -2,7 +2,9 @@ package implementation;
 
 import java.util.List;
 
-public class Implementor implements api.storage.Datanode, api.storage.Namenode {
+import api.storage.Namenode;
+
+public class ImplementorName implements Namenode{
 
 	@Override
 	public List<String> list(String prefix) {
@@ -33,25 +35,5 @@ public class Implementor implements api.storage.Datanode, api.storage.Namenode {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public String createBlock(byte[] data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteBlock(String block) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public byte[] readBlock(String block) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	//implementar o api.mapreduce sendo primeiro os datanodes e name nodes
 
 }
