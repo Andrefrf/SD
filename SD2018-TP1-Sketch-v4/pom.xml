@@ -48,7 +48,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<imageName>smduarte/sd17-t2-base</imageName>
+							<imageName>45242</imageName>
 							<baseImage>openjdk:8</baseImage>
 							<entryPoint>[]</entryPoint>
 							<resources>
@@ -80,7 +80,7 @@
 							<goal>build</goal>
 						</goals>
 						<configuration>
-							<imageName>smduarte/sd17-t2-${user.name}</imageName>
+							<imageName>45242</imageName>
 							<baseImage>smduarte/sd17-t2-base</baseImage>
 							<resources>
 								<resource>
