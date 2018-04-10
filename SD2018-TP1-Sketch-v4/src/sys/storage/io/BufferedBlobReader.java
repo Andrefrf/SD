@@ -53,7 +53,7 @@ public class BufferedBlobReader implements BlobReader {
 			return Collections.emptyIterator();
 	} 
 
-	private List<String> fetchBlockLines(String block) {//é pra fazer o pedido ao servidor
+	private List<String> fetchBlockLines(String block) {
 		byte[] data = datanode.readBlock( block );
 		return Arrays.asList( new String(data).split("\\R"));
 	}

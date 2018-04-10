@@ -8,13 +8,13 @@ import api.storage.Namenode;
 import sys.storage.io.BufferedBlobReader;
 import sys.storage.io.BufferedBlobWriter;
 
-public class BBlobStorage implements BlobStorage {
+public class LocalBlobStorage implements BlobStorage {
 	private static final int BLOCK_SIZE=512;
 
 	Namenode namenode;
 	Datanode[] datanodes;
 
-	public BBlobStorage() {
+	public LocalBlobStorage() {
 		this.namenode = new NamenodeClient();
 		this.datanodes = new Datanode[] { new DatanodeClient() };
 	}
@@ -35,12 +35,12 @@ public class BBlobStorage implements BlobStorage {
 	}
 
 	@Override
-	public BlobReader readBlob(String name) {//� o que pede pra ler
-		return new BufferedBlobReader( name, namenode, datanodes[0]); //mudar o que ta a receber
+	public BlobReader readBlob(String name) {
+		return new BufferedBlobReader( name, namenode, datanodes[0]);
 	}
 
 	@Override
-	public BlobWriter blobWriter(String name) {// pede pra escrever
-		return new BufferedBlobWriter( name, namenode, datanodes, BLOCK_SIZE);//tbm muda os parametros
+	public BlobWriter blobWriter(String name) {
+		return new BufferedBlobWriter( name, namenode, datanodes, BLOCK_SIZE);
 	}
 }

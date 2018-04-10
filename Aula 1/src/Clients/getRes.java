@@ -16,13 +16,11 @@ public class getRes {
 
 		Response response = target.path("/some-path/4adsjj5d1g").request().get();
 		{
-
 			if (response.hasEntity()) {
 				byte[] data = response.readEntity(byte[].class);
 				System.out.println("data resource length: " + data.length);
 			} else
 				System.err.println(response.getStatus());
-
 		}
 	}
 }

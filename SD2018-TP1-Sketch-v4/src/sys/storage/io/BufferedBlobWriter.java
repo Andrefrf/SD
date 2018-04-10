@@ -36,8 +36,7 @@ public class BufferedBlobWriter implements BlobWriter {
 	}
 
 	private void flush( byte[] data, boolean eob ) {
-		//escrever no datanode 
-		blocks.add( datanodes[0].createBlock(data)  );//tenho que fazer um pedido por rest
+		blocks.add( datanodes[0].createBlock(data)  );
 		if( eob ) {
 			namenode.create(name, blocks);
 			blocks.clear();
@@ -45,7 +44,7 @@ public class BufferedBlobWriter implements BlobWriter {
 	}
 
 	@Override
-	public void writeLine(String line) {//n altero nada
+	public void writeLine(String line) {
 		if( buf.size() + line.length() > blockSize - 1 ) {
 			this.flush(buf.toByteArray(), false);
 			buf.reset();

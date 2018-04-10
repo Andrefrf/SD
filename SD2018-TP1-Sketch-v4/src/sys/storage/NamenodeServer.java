@@ -4,41 +4,60 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.collections4.Trie;
 import org.apache.commons.collections4.trie.PatriciaTrie;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import api.storage.Namenode;
 
 
-public class NamenodeClient implements Namenode {
+public class NamenodeServer implements Namenode {
 
 	Trie<String, List<String>> names = new PatriciaTrie<>();
 	
 	public static void main(String[] args) throws IOException {
-		InetAddress server = null;
-		final int port = 9000 ;
-		final InetAddress group = InetAddress.getByName( args[0] ) ;
 
-		if( ! group.isMulticastAddress()) {
-		    System.out.println( "Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
+		ResourceConfig config = new ResourceConfig();
+		config.register(new NamenodeServer());
+
+		final int MAX_DATAGRAM_SIZE = 65536;
+		final InetAddress group = InetAddress.getByName(args[0]);
+		URI serverURI = UriBuilder.fromUri(group.getHostName()).build();
+		JdkHttpServerFactory.createHttpServer(serverURI, config);
+		String serverPath = serverURI.getPath();
+
+		System.err.println("Server ready....");
+
+		if (!group.isMulticastAddress()) {
+			System.out.println("Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
+			System.exit(1);
 		}
 
-		byte[] data = "Namenode".getBytes();
-		try(MulticastSocket socket = new MulticastSocket()) {
-		    DatagramPacket request = new DatagramPacket( data, data.length, group, port ) ;
-		    socket.send( request ) ; 
-		    byte[] buffer = new byte[65536];
-		    request = new DatagramPacket(buffer,buffer.length);
-		    socket.receive(request);
-		    server = request.getAddress();
-		    
+		try (MulticastSocket socket = new MulticastSocket(9000)) {
+			socket.joinGroup(group);
+			while (true) {
+				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
+				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+				socket.receive(request);
+				InetAddress path = request.getAddress();
+				int port = request.getPort();
+				if(!request.getData().equals("Namenode")) {
+					continue;
+				}
+				System.out.write(request.getData(), 0, request.getLength());
+				request = new DatagramPacket(serverPath.getBytes(), serverPath.getBytes().length,
+						path, port);
+				socket.send(request);
+			}
 		}
-		 
 	}
 	
 	@Override
