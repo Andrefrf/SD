@@ -1,7 +1,3 @@
-/sys/
-/test/
-/server/
-/Client/
-/implementation/
-/api/
 /utils/
+/sys/
+/api/

@@ -1,4 +1,4 @@
-package sys.storage;
+package sys.storage.server;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -41,7 +41,7 @@ public class DatanodeServer implements Datanode {
 
 		System.err.println("Server ready....");
 		
-		try (MulticastSocket socket = new MulticastSocket(9000)) {
+		try (MulticastSocket socket = new MulticastSocket(9100)) {
 			socket.joinGroup(group);
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
@@ -52,6 +52,7 @@ public class DatanodeServer implements Datanode {
 				if(!request.getData().equals(PATH)){
 					continue;
 				}
+				
 			}
 		}
 	}
