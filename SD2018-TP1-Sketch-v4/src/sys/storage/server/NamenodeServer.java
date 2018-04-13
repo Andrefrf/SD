@@ -16,12 +16,14 @@ import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import api.storage.Namenode;
+import utils.IP;
 
 
 public class NamenodeServer implements Namenode {
 
 	protected Trie<String, List<String>> names = new PatriciaTrie<>();//guardar o (blob-respetivos dataNodes) 
-
+	private static final String URI_BASE = "http://" + IP.hostAddress() + ":7777/";
+	
 	@SuppressWarnings("unlikely-arg-type")
 	public static void main(String[] args) throws IOException {
 
@@ -29,8 +31,8 @@ public class NamenodeServer implements Namenode {
 		config.register(new NamenodeServer());
 
 		final int MAX_DATAGRAM_SIZE = 65536;
-		final InetAddress group = InetAddress.getByName("");
-		URI serverURI = UriBuilder.fromUri(group.getHostName()).build();
+		final InetAddress group = InetAddress.getByName("228.100.0.1");
+		URI serverURI = UriBuilder.fromUri(URI_BASE).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
 		String serverPath = serverURI.getPath();
 		
@@ -46,14 +48,13 @@ public class NamenodeServer implements Namenode {
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-				socket.receive(request);
-				InetAddress path = request.getAddress();
+				
 				int port = request.getPort();
 				if(!request.getData().equals(PATH)) {
 					continue;
 				}
-				request = new DatagramPacket(serverPath.getBytes(), serverPath.getBytes().length,
-						path, port);
+				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length,
+						request.getAddress(), request.getPort());
 				socket.send(request);
 			}
 		}
@@ -65,20 +66,25 @@ public class NamenodeServer implements Namenode {
 	}
 
 	@Override
-	public void create(String name,  List<String> blocks) {
+	public synchronized void create(String name,  List<String> blocks) {
 		if( names.putIfAbsent(name, new ArrayList<>(blocks)) != null )
 			throw new WebApplicationException(Status.CONFLICT);
 	}
 
 	@Override
-	public void delete(String prefix) {
+	public synchronized void delete(String prefix) {
 		List<String> keys = new ArrayList<>(names.prefixMap( prefix ).keySet());
-		if( ! keys.isEmpty() )
+		if( ! keys.isEmpty() ) {
 			names.keySet().removeAll( keys );
+			throw new WebApplicationException(Status.NO_CONTENT);
+		}
+		else {
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
 
 	@Override
-	public void update(String name, List<String> blocks) {
+	public synchronized void update(String name, List<String> blocks) {
 		if( names.putIfAbsent( name, new ArrayList<>(blocks)) == null ) {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}

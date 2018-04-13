@@ -64,23 +64,30 @@ public class DatanodeServer implements Datanode {
 	}
 
 	@Override
-	public String createBlock(byte[] data) {
+	public synchronized String createBlock(byte[] data) {
 		String id = Random.key64();
 		blocks.put(id, data);
-		return URI_BASE + "/datanote/" + id;
+		return URI_BASE + "datanote/" + id;
 	}
 
 	@Override
-	public void deleteBlock(String block) {
-		blocks.remove(block);
+	public synchronized void deleteBlock(String block) {
+		if(blocks.containsKey(block)) {
+			blocks.remove(block);
+			throw new WebApplicationException(Status.NO_CONTENT);
+		}else {
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
 
 	@Override
 	public byte[] readBlock(String block) {
 		byte[] data = blocks.get(block);
-		if (data != null)
+		if (data != null) {
 			return data;
-		else
+		}
+		else {
 			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
 }
