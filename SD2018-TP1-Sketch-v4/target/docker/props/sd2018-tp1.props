@@ -1,7 +1,7 @@
 namenode-mainclass=sys.storage.server.NamenodeServer
-namenode-port=9000
+namenode-port=7777
 datanode-mainclass=sys.storage.server.DatanodeServer
-datanode-port=9100
+datanode-port=9000
 computenode-mainclass=sys.mapreduce.ComputeNodeServer
 computenode-port=6666
 blobstorage-class=sys.storage.LocalBlobStorage

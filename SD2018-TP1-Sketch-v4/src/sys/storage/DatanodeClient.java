@@ -54,7 +54,7 @@ public class DatanodeClient implements Datanode {
 
 	@Override
 	public void deleteBlock(String block) {
-		Response response = target.path(Datanode.PATH + "/" + block) //pq é parametro na interface
+		Response response = target.path(Datanode.PATH + "/" + block) //pq ï¿½ parametro na interface
 				.request()
 				.delete();
 
@@ -66,7 +66,7 @@ public class DatanodeClient implements Datanode {
 
 	@Override
 	public byte[] readBlock(String block) {
-		Response response = target.path(Datanode.PATH + "/" + block) //pq é parametro na interface
+		Response response = target.path(Datanode.PATH + "/" + block) //pq ï¿½ parametro na interface
 				.request()
 				.get();
 
