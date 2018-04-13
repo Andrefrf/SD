@@ -7,11 +7,8 @@ import java.net.MulticastSocket;
 import java.util.HashMap;
 import java.util.List;
 
-import api.storage.BlobStorage;
-import api.storage.Datanode;
-import api.storage.Namenode;
-import sys.storage.io.BufferedBlobReader;
-import sys.storage.io.BufferedBlobWriter;
+import api.storage.*;
+import sys.storage.io.*;
 
 public class LocalBlobStorage implements BlobStorage {
 	private static final int BLOCK_SIZE=512;
@@ -26,7 +23,7 @@ public class LocalBlobStorage implements BlobStorage {
 		datanodes = new HashMap();
 		
 		final int port = 9200 ;
-		final InetAddress group = InetAddress.getByName( args[0] ) ;
+		final InetAddress group = InetAddress.getByName("226.226.226.226");
 
 		if( ! group.isMulticastAddress()) {
 		    System.out.println( "Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
@@ -41,7 +38,6 @@ public class LocalBlobStorage implements BlobStorage {
 		    socket.send(request);
 		    request = new DatagramPacket(buf,buf.length);
 		    socket.receive(request);
-		    
 		}
 		
 		//Datanode connect

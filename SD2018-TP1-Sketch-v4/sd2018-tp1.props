@@ -5,5 +5,5 @@ datanode-port=9100
 computenode-mainclass=sys.mapreduce.ComputeNodeServer
 computenode-port=6666
 blobstorage-class=sys.storage.LocalBlobStorage
-discovery-multicast-address=226.226.226.226:3333
+discovery-multicast-address=226.226.226.226:9200
 datanode-gc-timeout=30

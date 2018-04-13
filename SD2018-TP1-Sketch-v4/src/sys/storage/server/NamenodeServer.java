@@ -29,7 +29,7 @@ public class NamenodeServer implements Namenode {
 		config.register(new NamenodeServer());
 
 		final int MAX_DATAGRAM_SIZE = 65536;
-		final InetAddress group = InetAddress.getByName(args[0]);
+		final InetAddress group = InetAddress.getByName("");
 		URI serverURI = UriBuilder.fromUri(group.getHostName()).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
 		String serverPath = serverURI.getPath();

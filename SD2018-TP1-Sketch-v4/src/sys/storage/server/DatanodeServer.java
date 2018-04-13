@@ -15,6 +15,7 @@ import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import api.storage.Datanode;
+import utils.IP;
 import utils.Random;
 
 
@@ -22,17 +23,20 @@ public class DatanodeServer implements Datanode {
 
 	private static final int INITIAL_SIZE = 32;
 	private Map<String, byte[]> blocks = new HashMap<>(INITIAL_SIZE);
-
+	private static final String URI_BASE = "http://"+IP.hostAddress()+":9999/";
+	
 	public static void main(String[] args) throws IOException {
-
+		
+		System.setProperty("java.net.preferIPv4Stack", "true");
 		ResourceConfig config = new ResourceConfig();
 		config.register(new DatanodeServer());
 
-		final int MAX_DATAGRAM_SIZE = 65536;
-		final InetAddress group = InetAddress.getByName(args[0]);
+		System.err.println("Server ready....");
+		
+		int MAX_DATAGRAM_SIZE = 65536;
+		InetAddress group = InetAddress.getByName("225.9.0.1");
 		URI serverURI = UriBuilder.fromUri(group.getHostName()).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
-//		String serverPath = serverURI.getPath();
 
 		if (!group.isMulticastAddress()) {
 			System.out.println("Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
@@ -47,8 +51,6 @@ public class DatanodeServer implements Datanode {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				socket.receive(request);
-//				InetAddress path = request.getAddress();
-//				int port = request.getPort();		
 				if(!request.getData().equals(PATH)){
 					continue;
 				}
@@ -61,7 +63,7 @@ public class DatanodeServer implements Datanode {
 	public String createBlock(byte[] data) {
 		String id = Random.key64();
 		blocks.put(id, data);
-		return id;
+		return URI_BASE + "datanote/" + id;
 	}
 
 	@Override
