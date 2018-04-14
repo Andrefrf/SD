@@ -1,9 +1,9 @@
 namenode-mainclass=sys.storage.server.NamenodeServer
 namenode-port=7777
 datanode-mainclass=sys.storage.server.DatanodeServer
-datanode-port=9000
+datanode-port=8500
 computenode-mainclass=sys.mapreduce.ComputeNodeServer
 computenode-port=6666
 blobstorage-class=sys.storage.LocalBlobStorage
-discovery-multicast-address=226.226.226.226:9200
+discovery-multicast-address=225.9.0.1:9000
 datanode-gc-timeout=30
