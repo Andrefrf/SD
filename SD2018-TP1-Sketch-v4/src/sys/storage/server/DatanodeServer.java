@@ -1,6 +1,7 @@
 package sys.storage.server;
 
 import java.awt.geom.IllegalPathStateException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,7 +49,6 @@ public class DatanodeServer implements Datanode {
 		}
 
 		System.err.println("Server ready....");
-		System.out.println(serverURI);
 		try {
 			MulticastSocket socket = new MulticastSocket(9000);
 			socket.joinGroup(group);
@@ -57,7 +57,7 @@ public class DatanodeServer implements Datanode {
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 
 				socket.receive(request);
-				if (!request.getData().equals(PATH)) {
+				if (!request.getData().equals("Datanode".getBytes())) {
 					continue;
 				}
 				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, request.getAddress(),
@@ -65,6 +65,7 @@ public class DatanodeServer implements Datanode {
 				socket.send(request);
 			}
 		} catch (Exception e) {
+			System.out.println("ERRO!");
 			System.out.println(e.getMessage());
 		}
 	}
@@ -77,11 +78,12 @@ public class DatanodeServer implements Datanode {
 		} else {
 			String url = "http://" + IP.hostAddress() + ":8500/" + "datanode/" + id;
 			try {
-				FileOutputStream file = new FileOutputStream(id);
-				file.write(data);
-				file.flush();
-				file.close();
+				File file = new File(id);
+				FileOutputStream f = new FileOutputStream(file);
+				f.write(data);
+				f.close();
 			} catch (Exception e) {
+				System.out.println("ERRO!");
 			}
 			return url;
 		}
@@ -99,28 +101,16 @@ public class DatanodeServer implements Datanode {
 
 	@Override
 	public byte[] readBlock(String block) {
-
 		byte[] data = null;
-		byte[] g = null;
-
 		try {
-			FileInputStream f = new FileInputStream(block);
-			f.read(g);
-			while (g != null) {
-				data = g;
-			}
+			File file = new File(block);
+			FileInputStream f = new FileInputStream(file);
+			data = new byte[(int)file.length()];
+			f.read(data);
 		} catch (IOException e) {
+			System.out.println("ERRO!");
 			e.printStackTrace();
 		}
 		return data;
-		
-		
-//		 byte[] data = blocks.get(block);
-//		 System.out.println(block);
-//		 if (data != null) {
-//		 return data;
-//		 } else {
-//		 throw new WebApplicationException(Status.NOT_FOUND);
-//		 }
 	}
 }

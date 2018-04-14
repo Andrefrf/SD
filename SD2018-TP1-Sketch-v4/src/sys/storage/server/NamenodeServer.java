@@ -50,7 +50,7 @@ public class NamenodeServer implements Namenode {
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				
 				int port = request.getPort();
-				if(!request.getData().equals(PATH)) {
+				if(!request.getData().equals("Namenode".getBytes())) {
 					continue;
 				}
 				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length,
