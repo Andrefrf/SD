@@ -41,8 +41,7 @@ public class DatanodeServer implements Datanode {
 		InetAddress group = InetAddress.getByName("225.9.0.1");
 		URI serverURI = URI.create(URI_BASE);
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
-		System.out.println(serverURI);
-
+		
 		if (!group.isMulticastAddress()) {
 			System.out.println("Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
 			System.exit(1);
@@ -80,11 +79,10 @@ public class DatanodeServer implements Datanode {
 			try {
 				FileOutputStream file = new FileOutputStream(id);
 				file.write(data);
-				System.out.println(id);
+				file.flush();
+				file.close();
 			} catch (Exception e) {
-
 			}
-
 			return url;
 		}
 	}
@@ -107,7 +105,8 @@ public class DatanodeServer implements Datanode {
 
 		try {
 			FileInputStream f = new FileInputStream(block);
-			while (f.read(g) != 0) {
+			f.read(g);
+			while (g != null) {
 				data = g;
 			}
 		} catch (IOException e) {
