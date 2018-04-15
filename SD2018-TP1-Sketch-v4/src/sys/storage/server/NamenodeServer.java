@@ -35,37 +35,36 @@ public class NamenodeServer implements Namenode {
 		config.register(new NamenodeServer());
 
 		final int MAX_DATAGRAM_SIZE = 65536;
-		final InetAddress group = InetAddress.getByName("228.100.0.1");
+		final InetAddress group = InetAddress.getByName("225.9.0.1");
 		URI serverURI = UriBuilder.fromUri(URI_BASE).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
 		String serverPath = serverURI.getPath();
 
 		System.err.println("Server ready....");
-		System.out.println("BASE: " + URI_BASE);
-		System.out.println("SERVER: " + serverURI);
 
 		if (!group.isMulticastAddress()) {
 			System.out.println("Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
 			System.exit(1);
 		}
 
-		try (MulticastSocket socket = new MulticastSocket(9000)) {
+		try (MulticastSocket socket = new MulticastSocket(9200)) {
 			socket.joinGroup(group);
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-
+				socket.receive(request);
 				InetAddress received = request.getAddress();
 				int port = request.getPort();
 
 				String a = new String(request.getData(), "UTF-8").trim();
-				if (!a.equalsIgnoreCase("Datanode")) {
-					continue;
+				System.out.print(a + "||");
+				if (a.equalsIgnoreCase("Namenode")) {
+					System.out.println("DONE");
+					DatagramSocket sock = new DatagramSocket();
+					request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
+					socket.send(request);
 				}
-				System.out.println("DONE");
-				DatagramSocket sock = new DatagramSocket();
-				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
-				socket.send(request);
+				
 			}
 		}
 	}

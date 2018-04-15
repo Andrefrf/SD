@@ -2,6 +2,7 @@ package sys.storage.io;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,16 +22,16 @@ public class BufferedBlobReader implements BlobReader {
 
 	final String name;
 	final Namenode namenode; 
-	final Datanode datanode;
+	final HashMap<String,Datanode> datanode;
 	
 	final Iterator<String> blocks;
 
 	final LazyBlockReader lazyBlockIterator;
 	
-	public BufferedBlobReader( String name, Namenode namenode, Datanode datanode ) {
+	public BufferedBlobReader( String name, Namenode namenode, HashMap<String,Datanode> d ) {
 		this.name = name;
 		this.namenode = namenode;
-		this.datanode = datanode;
+		this.datanode = d;
 		
 		this.blocks = this.namenode.read( name ).iterator();
 		this.lazyBlockIterator = new LazyBlockReader();
@@ -54,7 +55,7 @@ public class BufferedBlobReader implements BlobReader {
 	} 
 
 	private List<String> fetchBlockLines(String block) {
-		byte[] data = datanode.readBlock( block );
+		byte[] data = datanode.get(block).readBlock(block);
 		return Arrays.asList( new String(data).split("\\R"));
 	}
 	

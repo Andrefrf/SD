@@ -10,6 +10,7 @@
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/utils/Java.java
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/sys/mapreduce/MapReducer.java
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/api/storage/BlobStorage.java
+/home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/sys/comunication/Finder.java
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/sys/storage/NamenodeClient.java
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/sys/storage/io/BufferedBlobWriter.java
 /home/sd2018/Desktop/SD/SD2018-TP1-Sketch-v4/src/sys/mapreduce/ReducerTask.java

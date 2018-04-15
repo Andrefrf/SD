@@ -1,6 +1,5 @@
 package sys.storage.server;
 
-import java.awt.geom.IllegalPathStateException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,14 +52,15 @@ public class DatanodeServer implements Datanode {
 		System.out.println("BASE: " + URI_BASE);
 		System.out.println("SERVER: " + serverURI);
 		try {
-			MulticastSocket socket = new MulticastSocket(9000);
+			MulticastSocket socket = new MulticastSocket(9200);
 			socket.joinGroup(group);
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 
 				socket.receive(request);
-				String a = new String(request.getData(),"UTF-8").trim();
+				String a = new String(request.getData(),0,request.getLength());
+				System.out.println(a);
 				if (!a.equalsIgnoreCase("Datanode")) {
 					continue;
 				}

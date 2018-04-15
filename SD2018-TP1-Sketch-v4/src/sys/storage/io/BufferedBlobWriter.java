@@ -8,6 +8,7 @@ import api.storage.BlobStorage.BlobWriter;
 import api.storage.Datanode;
 import api.storage.Namenode;
 import utils.IO;
+import utils.Random;
 
 /*
  * 
@@ -37,12 +38,12 @@ public class BufferedBlobWriter implements BlobWriter {
 	}
 
 	private void flush( byte[] data, boolean eob ) {
+		spot = Random.nextInt(datanodes.length);
 		blocks.add( datanodes[spot].createBlock(data)  );
 		if( eob ) {
 			namenode.create(name, blocks);
 			blocks.clear();
 		}
-		spot++;
 	}
 
 	@Override

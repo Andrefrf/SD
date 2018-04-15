@@ -33,8 +33,12 @@ public class DatanodeClient implements Datanode {
 	
 	ClientConfig config = new ClientConfig();
 	javax.ws.rs.client.Client client = ClientBuilder.newClient(config);
-	URI baseURI = UriBuilder.fromUri("http://" + IP.hostAddress() + ":9999/v1/").build(); //depois mudar numero
+	URI baseURI = null; 
 	WebTarget target = client.target( baseURI );
+	
+	public DatanodeClient(URI dataURI){
+		baseURI = dataURI;
+	}
 	
 	@Override
 	public String createBlock(byte[] data) {
