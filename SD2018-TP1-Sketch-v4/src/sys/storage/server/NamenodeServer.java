@@ -2,6 +2,7 @@ package sys.storage.server;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.URI;
@@ -22,8 +23,8 @@ import utils.IP;
 public class NamenodeServer implements Namenode {
 
 	protected Trie<String, List<String>> names = new PatriciaTrie<>();//guardar o (blob-respetivos dataNodes) 
-	private static final String URI_BASE = "http://" + IP.hostAddress() + ":7777/";
-	
+	private static final String URI_BASE = "http://"+IP.hostAddress() + ":7777/";
+
 	@SuppressWarnings("unlikely-arg-type")
 	public static void main(String[] args) throws IOException {
 
@@ -35,8 +36,10 @@ public class NamenodeServer implements Namenode {
 		URI serverURI = UriBuilder.fromUri(URI_BASE).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
 		String serverPath = serverURI.getPath();
-		
+
 		System.err.println("Server ready....");
+		System.out.println("BASE: " + URI_BASE);
+		System.out.println("SERVER: " + serverURI);
 
 		if (!group.isMulticastAddress()) {
 			System.out.println("Not a multicast address (use range : 224.0.0.0 -- 239.255.255.255)");
@@ -48,13 +51,16 @@ public class NamenodeServer implements Namenode {
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-				
+
+				InetAddress received = request.getAddress();
 				int port = request.getPort();
-				if(!request.getData().equals("Namenode".getBytes())) {
+
+				String a = new String(request.getData(), "UTF-8").trim();
+				if (!a.equals("Namenode")) {
 					continue;
 				}
-				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length,
-						request.getAddress(), request.getPort());
+				DatagramSocket sock = new DatagramSocket();
+				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
 				socket.send(request);
 			}
 		}
@@ -62,38 +68,37 @@ public class NamenodeServer implements Namenode {
 
 	@Override
 	public List<String> list(String prefix) {
-		return new ArrayList<>(names.prefixMap( prefix ).keySet());
+		return new ArrayList<>(names.prefixMap(prefix).keySet());
 	}
 
 	@Override
-	public synchronized void create(String name,  List<String> blocks) {
-		if( names.putIfAbsent(name, new ArrayList<>(blocks)) != null )
+	public synchronized void create(String name, List<String> blocks) {
+		if (names.putIfAbsent(name, new ArrayList<>(blocks)) != null)
 			throw new WebApplicationException(Status.CONFLICT);
 	}
 
 	@Override
 	public synchronized void delete(String prefix) {
-		List<String> keys = new ArrayList<>(names.prefixMap( prefix ).keySet());
-		if( ! keys.isEmpty() ) {
-			names.keySet().removeAll( keys );
+		List<String> keys = new ArrayList<>(names.prefixMap(prefix).keySet());
+		if (!keys.isEmpty()) {
+			names.keySet().removeAll(keys);
 			throw new WebApplicationException(Status.NO_CONTENT);
-		}
-		else {
+		} else {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 
 	@Override
 	public synchronized void update(String name, List<String> blocks) {
-		if( names.putIfAbsent( name, new ArrayList<>(blocks)) == null ) {
+		if (names.putIfAbsent(name, new ArrayList<>(blocks)) == null) {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 
 	@Override
 	public List<String> read(String name) {
-		List<String> blocks = names.get( name );
-		if( blocks == null )
+		List<String> blocks = names.get(name);
+		if (blocks == null)
 			throw new WebApplicationException(Status.NOT_FOUND);
 		return blocks;
 	}

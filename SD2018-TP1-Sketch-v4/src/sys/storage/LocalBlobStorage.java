@@ -44,6 +44,7 @@ public class LocalBlobStorage implements BlobStorage {
 		data = "Datanode".getBytes();
 		try(MulticastSocket socket = new MulticastSocket()) {
 		    DatagramPacket request = new DatagramPacket( data, data.length, group, port );
+		    String a = new String(request.getData(),"UTF-8").trim();
 		    socket.send(request);
 		    request = new DatagramPacket(buf,buf.length);
 		    socket.receive(request);

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.URI;
@@ -49,6 +50,8 @@ public class DatanodeServer implements Datanode {
 		}
 
 		System.err.println("Server ready....");
+		System.out.println("BASE: " + URI_BASE);
+		System.out.println("SERVER: " + serverURI);
 		try {
 			MulticastSocket socket = new MulticastSocket(9000);
 			socket.joinGroup(group);
@@ -57,15 +60,18 @@ public class DatanodeServer implements Datanode {
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 
 				socket.receive(request);
-				if (!request.getData().equals("Datanode".getBytes())) {
+				String a = new String(request.getData(),"UTF-8").trim();
+				System.out.print(new String(request.getData(),"UTF-8"));
+				if (!a.equals("Datanode")) {
 					continue;
 				}
+				System.out.println("DONE");
+				DatagramSocket sock = new DatagramSocket();
 				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, request.getAddress(),
 						request.getPort());
-				socket.send(request);
+				sock.send(request);
 			}
 		} catch (Exception e) {
-			System.out.println("ERRO!");
 			System.out.println(e.getMessage());
 		}
 	}
