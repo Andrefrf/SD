@@ -16,6 +16,9 @@ import org.apache.commons.collections4.Trie;
 import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
+
 import api.storage.Namenode;
 import utils.IP;
 
@@ -56,9 +59,10 @@ public class NamenodeServer implements Namenode {
 				int port = request.getPort();
 
 				String a = new String(request.getData(), "UTF-8").trim();
-				if (!a.equals("Namenode")) {
+				if (!a.equalsIgnoreCase("Datanode")) {
 					continue;
 				}
+				System.out.println("DONE");
 				DatagramSocket sock = new DatagramSocket();
 				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
 				socket.send(request);

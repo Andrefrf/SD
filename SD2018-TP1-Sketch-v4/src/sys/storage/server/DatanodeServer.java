@@ -61,8 +61,7 @@ public class DatanodeServer implements Datanode {
 
 				socket.receive(request);
 				String a = new String(request.getData(),"UTF-8").trim();
-				System.out.print(new String(request.getData(),"UTF-8"));
-				if (!a.equals("Datanode")) {
+				if (!a.equalsIgnoreCase("Datanode")) {
 					continue;
 				}
 				System.out.println("DONE");
