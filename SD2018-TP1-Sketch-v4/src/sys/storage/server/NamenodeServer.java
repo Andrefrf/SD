@@ -2,7 +2,6 @@ package sys.storage.server;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.URI;
@@ -17,8 +16,6 @@ import org.apache.commons.collections4.trie.PatriciaTrie;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
-
 import api.storage.Namenode;
 import utils.IP;
 
@@ -28,7 +25,6 @@ public class NamenodeServer implements Namenode {
 	protected Trie<String, List<String>> names = new PatriciaTrie<>();//guardar o (blob-respetivos dataNodes) 
 	private static final String URI_BASE = "http://"+IP.hostAddress() + ":7777/";
 
-	@SuppressWarnings("unlikely-arg-type")
 	public static void main(String[] args) throws IOException {
 
 		ResourceConfig config = new ResourceConfig();
@@ -38,7 +34,6 @@ public class NamenodeServer implements Namenode {
 		final InetAddress group = InetAddress.getByName("225.9.0.1");
 		URI serverURI = UriBuilder.fromUri(URI_BASE).build();
 		JdkHttpServerFactory.createHttpServer(serverURI, config);
-		String serverPath = serverURI.getPath();
 
 		System.err.println("Server ready....");
 
@@ -57,14 +52,12 @@ public class NamenodeServer implements Namenode {
 				int port = request.getPort();
 
 				String a = new String(request.getData(), "UTF-8").trim();
-				System.out.print(a + "||");
-				if (a.equalsIgnoreCase("Namenode")) {
+				System.out.println(a);
+				if (a.contains("Namenode")) {
 					System.out.println("DONE");
-					DatagramSocket sock = new DatagramSocket();
 					request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
 					socket.send(request);
 				}
-				
 			}
 		}
 	}

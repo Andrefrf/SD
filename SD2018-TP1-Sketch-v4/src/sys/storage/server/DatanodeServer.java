@@ -9,11 +9,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
@@ -26,7 +23,6 @@ import utils.Random;
 
 public class DatanodeServer implements Datanode {
 
-	private static Logger logger = Logger.getLogger(Datanode.class.toString());
 	private static final int INITIAL_SIZE = 32;
 	private Map<String, byte[]> blocks = new HashMap<>(INITIAL_SIZE);
 	private static final String URI_BASE = "http://" + IP.hostAddress() + ":8500/";
@@ -57,18 +53,17 @@ public class DatanodeServer implements Datanode {
 			while (true) {
 				byte[] buffer = new byte[MAX_DATAGRAM_SIZE];
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-
+				InetAddress received = request.getAddress();
+				int port = request.getPort();
+				
 				socket.receive(request);
-				String a = new String(request.getData(),0,request.getLength());
+				String a = new String(request.getData(), "UTF-8").trim();
 				System.out.println(a);
-				if (!a.equalsIgnoreCase("Datanode")) {
-					continue;
-				}
-				System.out.println("DONE");
-				DatagramSocket sock = new DatagramSocket();
-				request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, request.getAddress(),
-						request.getPort());
-				sock.send(request);
+				if (a.contains("Datanode")) {
+					System.out.println("DONE");
+					request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
+					socket.send(request);
+				};
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -109,6 +104,7 @@ public class DatanodeServer implements Datanode {
 		byte[] data = null;
 		try {
 			File file = new File(block);
+			@SuppressWarnings("resource")
 			FileInputStream f = new FileInputStream(file);
 			data = new byte[(int)file.length()];
 			f.read(data);

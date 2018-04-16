@@ -42,50 +42,96 @@ public class NamenodeClient implements Namenode {
 	public void create(String name, List<String> blocks) {
 		Response response = target.path(Namenode.PATH + name).request()
 				.post(Entity.entity(blocks, MediaType.APPLICATION_OCTET_STREAM));
+		try {
+			for (int i = 0; i < 5; i++) {
+				if (response.hasEntity()) {
+					
+					String id = response.readEntity(String.class);
+					System.out.println("data resource id: " + id);
+					
+				} else
+					System.err.println(response.getStatus());
+			}
 
-		if (response.hasEntity()) {
-			String id = response.readEntity(String.class);
-			System.out.println("data resource id: " + id);
-		} else
-			System.err.println(response.getStatus());
+		} catch (Exception e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public void delete(String prefix) {
 		Response response = target.path(Namenode.PATH + "/list/").queryParam("prefix", prefix).request().delete();
+		try {
+			for (int i = 0; i < 5; i++) {
 
-		if (response.hasEntity()) {
-			String id = response.readEntity(String.class);
-			System.out.println(id);
-		} else
-			System.err.println(response.getStatus());
+				if (response.hasEntity()) {
+					
+					String id = response.readEntity(String.class);
+					System.out.println(id);
+					
+				} else
+					System.err.println(response.getStatus());
+			}
+		} catch (Exception e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public void update(String name, List<String> blocks) {
 		Response response = target.path(Namenode.PATH + name).request()
 				.put(Entity.entity(blocks, MediaType.APPLICATION_OCTET_STREAM));
+		try {
+			for (int i = 0; i < 5; i++) {
 
-		if (response.hasEntity()) {
-			String id = response.readEntity(String.class);
-			System.out.println(id);
-		} else
-			System.err.println(response.getStatus());
+				if (response.hasEntity()) {
+					
+					String id = response.readEntity(String.class);
+					System.out.println(id);
+					
+				} else
+					System.err.println(response.getStatus());
+			}
+		} catch (Exception e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public List<String> read(String name) {
 		Response response = target.path(Namenode.PATH + name).request().get();
+		try {
+			for (int i = 0; i < 5; i++) {
 
-		if (response.hasEntity()) {
-			// ha uma melhor maneira de tratar da list , mudar assim que se souber uma
-			// melhor maneira
-			List<String> b = response.readEntity(new GenericType<List<String>>() {
-			});
-			System.out.println("list: " + b);
-			return b;
-		} else
-			System.err.println(response.getStatus());
+				if (response.hasEntity()) {
+					
+					List<String> b = response.readEntity(new GenericType<List<String>>() {
+					});
+					System.out.println("list: " + b);
+					return b;
+					
+				} else
+					System.err.println(response.getStatus());
+			}
+		} catch (Exception e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		}
 		return null;
 	}
 }
