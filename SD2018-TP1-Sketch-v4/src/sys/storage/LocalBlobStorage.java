@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import api.storage.*;
+import javassist.bytecode.Descriptor.Iterator;
 import sys.Multicast.Multicast;
 import sys.storage.io.*;
 
@@ -26,21 +27,25 @@ public class LocalBlobStorage implements BlobStorage {
 		URI nameURI = null;
 		String lel = "Namenode";
 		while (namenode == null) {
-			
 			Set<URI> uri = multi.send(lel);
-			
-			if(uri.size()==0) {
+
+			if (uri.size() == 0) {
 				continue;
 			}
 			nameURI = uri.iterator().next();
-			
+
 			namenode = new NamenodeClient(nameURI);
 		}
 		lel = "Datanode";
 		Set<URI> uri = multi.send(lel);
-		for (URI dataURI : uri) {
-			datanodes.put(dataURI, new DatanodeClient(dataURI));
+		while (uri.iterator().hasNext()) {
+			URI u = uri.iterator().next();
+			datanodes.put(u, new DatanodeClient(u));
 		}
+
+		// for (URI dataURI : uri) {
+		// datanodes.put(dataURI, new DatanodeClient(dataURI));
+		// }
 	}
 
 	@Override

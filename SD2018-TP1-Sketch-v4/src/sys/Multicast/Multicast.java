@@ -29,20 +29,28 @@ public class Multicast {
 		received = new HashSet<>();
 		byte[] data = type.getBytes();
 		try (MulticastSocket socket = new MulticastSocket()) {
-			socket.setTimeToLive(255);
+
 			DatagramPacket request = new DatagramPacket(data, data.length, group, port);
 			while (received.isEmpty()) {
+
 				socket.send(request);
+				socket.setSoTimeout(4000);
 				data = new byte[MAX_DATAGRAM_SIZE];
+				request = new DatagramPacket(data,data.length);
 				try {
+
 					for (;;) {
+
+						request = new DatagramPacket(data,data.length);
 						socket.receive(request);
 						String rec = new String(request.getData(), 0, request.getLength());
+						System.out.println(type);
 						received.add(URI.create(rec));
+
 					}
 				} catch (Exception e) {
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {
 						socket.close();
 
@@ -50,9 +58,9 @@ public class Multicast {
 					}
 				}
 			}
+
 			socket.close();
 		} catch (IOException e) {
-			
 			e.printStackTrace();
 		}
 		return received;

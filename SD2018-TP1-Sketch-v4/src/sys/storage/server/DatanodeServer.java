@@ -25,12 +25,11 @@ public class DatanodeServer implements Datanode {
 
 	private static final int INITIAL_SIZE = 32;
 	private Map<String, byte[]> blocks = new HashMap<>(INITIAL_SIZE);
-	private static final String URI_BASE = "http://" + IP.hostAddress() + ":8500/";
+	private static final String URI_BASE = "http://" + IP.hostAddress() + ":7778/";
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 
-		System.setProperty("java.net.preferIPv4Stack", "true");
 		ResourceConfig config = new ResourceConfig();
 		config.register(new DatanodeServer());
 

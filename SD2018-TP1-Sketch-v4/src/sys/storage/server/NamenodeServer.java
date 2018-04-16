@@ -22,7 +22,7 @@ import utils.IP;
 
 public class NamenodeServer implements Namenode {
 
-	protected Trie<String, List<String>> names = new PatriciaTrie<>();//guardar o (blob-respetivos dataNodes) 
+	protected Trie<String, List<String>> names = new PatriciaTrie<>();
 	private static final String URI_BASE = "http://"+IP.hostAddress() + ":7777/";
 
 	public static void main(String[] args) throws IOException {
