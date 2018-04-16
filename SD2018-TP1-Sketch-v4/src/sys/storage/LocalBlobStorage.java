@@ -24,9 +24,10 @@ public class LocalBlobStorage implements BlobStorage {
 		Multicast multi = new Multicast();
 
 		URI nameURI = null;
-
+		String lel = "Namenode";
 		while (namenode == null) {
-			Set<URI> uri = multi.send("Namenode");
+			
+			Set<URI> uri = multi.send(lel);
 			
 			if(uri.size()==0) {
 				continue;
@@ -35,7 +36,8 @@ public class LocalBlobStorage implements BlobStorage {
 			
 			namenode = new NamenodeClient(nameURI);
 		}
-		Set<URI> uri = multi.send("Datanode");
+		lel = "Datanode";
+		Set<URI> uri = multi.send(lel);
 		for (URI dataURI : uri) {
 			datanodes.put(dataURI, new DatanodeClient(dataURI));
 		}
@@ -46,7 +48,6 @@ public class LocalBlobStorage implements BlobStorage {
 		return namenode.list(prefix);
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public void deleteBlobs(String prefix) {
 		namenode.list(prefix).forEach(blob -> {

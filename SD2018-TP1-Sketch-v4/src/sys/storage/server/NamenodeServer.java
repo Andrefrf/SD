@@ -52,7 +52,6 @@ public class NamenodeServer implements Namenode {
 				int port = request.getPort();
 
 				String a = new String(request.getData(), "UTF-8").trim();
-				System.out.println(a);
 				if (a.contains("Namenode")) {
 					System.out.println("DONE");
 					request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);

@@ -58,7 +58,6 @@ public class DatanodeServer implements Datanode {
 				
 				socket.receive(request);
 				String a = new String(request.getData(), "UTF-8").trim();
-				System.out.println(a);
 				if (a.contains("Datanode")) {
 					System.out.println("DONE");
 					request = new DatagramPacket(URI_BASE.getBytes(), URI_BASE.getBytes().length, received, port);
